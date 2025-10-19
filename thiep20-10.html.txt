@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chúc Mừng 20/10</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #fff0f5, #ffe6f0);
+      overflow: hidden;
+      text-align: center;
+      color: #d6336c;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 600px;
+      margin: 60px auto;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 0.3em;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+
+    .heart {
+      font-size: 2em;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+    }
+
+    #download {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #ff99cc;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    #download:hover {
+      background-color: #ff66aa;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="card" id="card">
+  <h1>💐 Chúc Mừng 20/10 💐</h1>
+  <p>Gửi tới bạn những lời chúc ngọt ngào nhất:</p>
+  <p><strong>Luôn xinh đẹp, rạng rỡ, tràn đầy yêu thương và hạnh phúc mỗi ngày!</strong></p>
+  <p class="heart">❤️❤️❤️</p>
+  <div id="qrcode"></div>
+  <button id="download">📸 Tải thiệp</button>
+</div>
+
+<!-- Nhạc nền -->
+<audio id="bgMusic" autoplay loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mpeg">
+  Trình duyệt của bạn không hỗ trợ phát nhạc.
+</audio>
+
+<!-- Thư viện QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Thư viện html2canvas để chụp ảnh -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  // QR nội dung
+  const qrContent = "Chúc bạn một ngày 20/10 ngập tràn niềm vui và yêu thương! 💐";
+  new QRCode(document.getElementById("qrcode"), {
+    text: qrContent,
+    width: 150,
+    height: 150,
+    colorDark : "#d6336c",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+
+  // Hiệu ứng hoa rơi
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  let W = window.innerWidth;
+  let H = window.innerHeight;
+  canvas.width = W;
+  canvas.height = H;
+
+  const petals = [];
+
+  for (let i = 0; i < 50; i++) {
+    petals.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 5 + 2,
+      d: Math.random() * 50,
+      color: "rgba(255, 105, 180, 0.8)",
+      tilt: Math.floor(Math.random() * 5) - 5
+    });
+  }
+
+  function drawPetals() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.beginPath();
+    for (let i = 0; i < petals.length; i++) {
+      const p = petals[i];
+      ctx.moveTo(p.x, p.y);
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+    }
+    ctx.fillStyle = "rgba(255, 105, 180, 0.6)";
+    ctx.fill();
+    updatePetals();
+  }
+
+  function updatePetals() {
+    for (let i = 0; i < petals.length; i++) {
+      const p = petals[i];
+      p.y += Math.cos(p.d) + 1 + p.r / 2;
+      p.x += Math.sin(p.d) * 2;
+
+      if (p.x > W || p.x < 0 || p.y > H) {
+        p.x = Math.random() * W;
+        p.y = -10;
+      }
+    }
+  }
+
+  setInterval(drawPetals, 33);
+
+  // Tải ảnh thiệp
+  document.getElementById("download").addEventListener("click", function() {
+    html2canvas(document.getElementById("card")).then(function(canvas) {
+      const link = document.createElement("a");
+      link.download = "thiep_20_10.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  });
+
+  // Tự phát nhạc nếu có tương tác
+  document.body.addEventListener('click', () => {
+    document.getElementById('bgMusic').play().catch(() => {});
+  }, { once: true });
+</script>
+
+</body>
+</html>
